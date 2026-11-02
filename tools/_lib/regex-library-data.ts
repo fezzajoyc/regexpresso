@@ -1,0 +1,463 @@
+/**
+ * regex-library-data.ts — 精选正则配方库(复制即用)。
+ *
+ * 契约(tests/regexplain.test.ts 数据完整性):
+ *  - ≥ 25 条,name 唯一,pattern 全部可编译,且在自带 sample 上至少命中 1 次;
+ *  - 每条 desc 必须有 en/zh/ja/es/pt 五语;
+ *  - desc 是单句人话,不写营销话。
+ * 本文件 locale-free 原则的例外:desc 按 locale 存原文,由引擎按站点语言取用。
+ */
+
+import type { Locale } from "@/lib/site";
+
+/** 库条目描述支持的语言(核心 5 语;其余语言回退 en) */
+export type LibraryLocale = "en" | "zh" | "ja" | "es" | "pt";
+
+export type LibraryEntry = {
+  /** 稳定 id(用于 key 与锚点),kebab-case */
+  id: string;
+  /** 展示名(技术名词,保持英文) */
+  name: string;
+  pattern: string;
+  flags: string;
+  desc: Record<LibraryLocale, string>;
+  /** 自带样例文本:保证 pattern 在它上面至少命中一次 */
+  sample: string;
+};
+
+export const REGEX_LIBRARY: LibraryEntry[] = [
+  {
+    id: "email",
+    name: "Email address",
+    pattern: "[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}",
+    flags: "g",
+    desc: {
+      en: "Practical email matcher for forms and logs — pragmatic subset, not full RFC 5322.",
+      zh: "表单和日志里够用的邮箱匹配——实用子集,不是完整 RFC 5322。",
+      ja: "フォームやログで実用上十分なメールアドレス抽出。完全な RFC 5322 ではなく実用サブセット。",
+      es: "Detector de correos práctico para formularios y registros: subconjunto útil, no el RFC 5322 completo.",
+      pt: "Detector de e-mails prático para formulários e logs — subconjunto útil, não o RFC 5322 completo.",
+    },
+    sample: "Write to ada@mail.co or bob_99@example.org, never to nobody.",
+  },
+  {
+    id: "url",
+    name: "URL (http/https)",
+    pattern: "https?://[^\\s\"'<>]+",
+    flags: "gi",
+    desc: {
+      en: "Pulls http and https links out of arbitrary text, up to the first space or angle bracket.",
+      zh: "从任意文本里抽出 http/https 链接,截到第一个空格或尖括号。",
+      ja: "任意のテキストから http / https のリンクを抽出。最初の空白や山括弧で止まります。",
+      es: "Extrae enlaces http y https de texto arbitrario, hasta el primer espacio o ángulo.",
+      pt: "Extrai links http e https de texto arbitrário, até o primeiro espaço ou sinal de menor.",
+    },
+    sample: "See https://example.com/docs?q=1&q=2 or http://foo.bar/baz for details.",
+  },
+  {
+    id: "ipv4",
+    name: "IPv4 address",
+    pattern: "\\b(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\b",
+    flags: "g",
+    desc: {
+      en: "Matches only valid octets 0–255, so 256.1.1.1 and 999.9.9.9 are rejected.",
+      zh: "只匹配 0–255 的合法八位组,256.1.1.1、999.9.9.9 这类写法会被拒绝。",
+      ja: "0〜255 の有効なオクテットだけに一致。256.1.1.1 や 999.9.9.9 は拒否されます。",
+      es: "Solo coincide con octetos válidos 0–255, así que 256.1.1.1 y 999.9.9.9 se rechazan.",
+      pt: "Só corresponde a octetos válidos 0–255, então 256.1.1.1 e 999.9.9.9 são rejeitados.",
+    },
+    sample: "Gateway 192.168.1.1 up; 256.300.1.2 is not a valid address.",
+  },
+  {
+    id: "ipv6",
+    name: "IPv6 address (full form)",
+    pattern: "\\b(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}\\b",
+    flags: "gi",
+    desc: {
+      en: "Full eight-group IPv6 notation only — compressed :: forms need a longer pattern.",
+      zh: "只匹配完整的八组 IPv6 写法;含 :: 的压缩形式需要更长的模式。",
+      ja: "8 グループ完全表記の IPv6 のみ。:: を使う圧縮形はより長いパターンが必要です。",
+      es: "Solo la notación IPv6 completa de ocho grupos; las formas :: comprimidas requieren un patrón más largo.",
+      pt: "Apenas a notação IPv6 completa de oito grupos; formas :: comprimidas pedem um padrão maior.",
+    },
+    sample: "Host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 is reachable.",
+  },
+  {
+    id: "hex-color",
+    name: "Hex color",
+    pattern: "#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\\b",
+    flags: "gi",
+    desc: {
+      en: "Finds #RGB shorthand and #RRGGBB colors; 4, 5 and 8 digit forms are ignored.",
+      zh: "匹配 #RGB 缩写与 #RRGGBB;4、5、8 位形式不匹配。",
+      ja: "#RGB の省略形と #RRGGBB に一致。4・5・8 桁の形式は対象外です。",
+      es: "Encuentra colores #RGB abreviados y #RRGGBB; ignora las formas de 4, 5 y 8 dígitos.",
+      pt: "Encontra cores #RGB abreviadas e #RRGGBB; ignora as formas de 4, 5 e 8 dígitos.",
+    },
+    sample: "Use #fff for cards, #4A90D9 for links, and #abc for borders.",
+  },
+  {
+    id: "iso-date",
+    name: "ISO date (YYYY-MM-DD)",
+    pattern: "\\b\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\b",
+    flags: "g",
+    desc: {
+      en: "ISO 8601 dates with plausible month 01–12 and day 01–31; does not check real calendars.",
+      zh: "ISO 8601 日期,月份限 01–12、日期限 01–31;不校验真实日历(如 2 月 30 日)。",
+      ja: "ISO 8601 の日付。月は 01〜12、日は 01〜31 に妥当性を絞ります(実在暦までは検証しません)。",
+      es: "Fechas ISO 8601 con mes plausible 01–12 y día 01–31; no comprueba calendarios reales.",
+      pt: "Datas ISO 8601 com mês plausível 01–12 e dia 01–31; não confere calendários reais.",
+    },
+    sample: "Launch 2026-11-01, review 2027-01-15, skip 2026-13-40.",
+  },
+  {
+    id: "time-24h",
+    name: "Time HH:MM (24h)",
+    pattern: "\\b(?:[01]\\d|2[0-3]):[0-5]\\d\\b",
+    flags: "g",
+    desc: {
+      en: "Twenty-four hour clock times with a real hour range; 24:00 and 7:5 fail.",
+      zh: "24 小时制时间,小时段真实有效;24:00、7:5 都不匹配。",
+      ja: "24 時間制の時刻。実在する時の範囲だけに一致し、24:00 や 7:5 は拒否されます。",
+      es: "Horas de reloj de 24 con rango real; 24:00 y 7:5 no coinciden.",
+      pt: "Horas no relógio de 24 com faixa real; 24:00 e 7:5 não correspondem.",
+    },
+    sample: "The train leaves at 23:05, arrives 06:40, never at 24:00.",
+  },
+  {
+    id: "us-date",
+    name: "US date (MM/DD/YYYY)",
+    pattern: "\\b(?:0?[1-9]|1[0-2])\\/(?:0?[1-9]|[12]\\d|3[01])\\/\\d{4}\\b",
+    flags: "g",
+    desc: {
+      en: "American month/day/year dates with a leading-zero-optional month and day.",
+      zh: "美式 月/日/年 日期,月和日的补零可省略。",
+      ja: "米国式の 月/日/年。月と日の先頭ゼロはあってもなくても構いません。",
+      es: "Fechas americanas mes/día/año con cero inicial opcional en mes y día.",
+      pt: "Datas americanas mês/dia/ano com zero inicial opcional em mês e dia.",
+    },
+    sample: "Due 12/31/2026, started 1/5/2026, invalid 13/40/2026.",
+  },
+  {
+    id: "us-phone",
+    name: "Phone number (North America)",
+    pattern: "\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}",
+    flags: "g",
+    desc: {
+      en: "Common North American formats: (415) 555-2671, 415-555-2671, 415 555 2671.",
+      zh: "常见北美格式:(415) 555-2671、415-555-2671、415 555 2671。",
+      ja: "北米の一般的な形式:(415) 555-2671、415-555-2671、415 555 2671。",
+      es: "Formatos norteamericanos comunes: (415) 555-2671, 415-555-2671, 415 555 2671.",
+      pt: "Formatos norte-americanos comuns: (415) 555-2671, 415-555-2671, 415 555 2671.",
+    },
+    sample: "Call (415) 555-2671 or 212-555-0199, never 555.",
+  },
+  {
+    id: "uk-mobile",
+    name: "UK mobile number",
+    pattern: "\\b07\\d{3}[\\s-]?\\d{6}\\b",
+    flags: "g",
+    desc: {
+      en: "UK mobile numbers starting 07, with the middle space or dash optional.",
+      zh: "以 07 开头的英国手机号,中间的空格或连字符可有可无。",
+      ja: "07 で始まる英国の携帯番号。中央の空白やハイフンは省略可能です。",
+      es: "Móviles del Reino Unido que empiezan por 07, con espacio o guion opcional.",
+      pt: "Celulares do Reino Unido começando com 07, com espaço ou hífen opcional.",
+    },
+    sample: "Text 07911 123456 or 07911123456 after 6pm.",
+  },
+  {
+    id: "strong-password",
+    name: "Strong password (12+)",
+    pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{12,}$",
+    flags: "",
+    desc: {
+      en: "Whole-string check via lookaheads: lower + upper + digit + symbol, 12 characters or more.",
+      zh: "用先行断言做整串检查:小写 + 大写 + 数字 + 符号,长度 12 以上。",
+      ja: "先読みによる文字列全体のチェック:小文字・大文字・数字・記号を含み 12 文字以上。",
+      es: "Comprobación de cadena completa con lookaheads: minúscula + mayúscula + dígito + símbolo, 12 o más caracteres.",
+      pt: "Verificação da string inteira com lookaheads: minúscula + maiúscula + dígito + símbolo, 12+ caracteres.",
+    },
+    sample: "Tr0ub4dor&3XYZw9",
+  },
+  {
+    id: "slug",
+    name: "URL slug",
+    pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    flags: "",
+    desc: {
+      en: "Lowercase words separated by single hyphens, no leading, trailing or doubled hyphens.",
+      zh: "小写单词用单个连字符连接;不允许开头、结尾或连续连字符。",
+      ja: "小文字と単一ハイフンのみ。先頭・末尾・連続するハイフンは許しません。",
+      es: "Palabras en minúsculas con guiones simples; sin guiones al inicio, final o dobles.",
+      pt: "Palavras em minúsculas com hifens simples; sem hífen no início, fim ou duplicado.",
+    },
+    sample: "regex-tester-2",
+  },
+  {
+    id: "username",
+    name: "Username (3–16)",
+    pattern: "^[A-Za-z0-9_]{3,16}$",
+    flags: "",
+    desc: {
+      en: "Letters, digits and underscore only, 3 to 16 characters — the classic signup rule.",
+      zh: "只允许字母、数字、下划线,长度 3–16——经典注册规则。",
+      ja: "英字・数字・アンダースコアのみで 3〜16 文字。定番のサインアップルールです。",
+      es: "Solo letras, dígitos y guion bajo, de 3 a 16 caracteres: la regla clásica de registro.",
+      pt: "Só letras, dígitos e sublinhado, de 3 a 16 caracteres — a regra clássica de cadastro.",
+    },
+    sample: "regex_fan_42",
+  },
+  {
+    id: "html-tag",
+    name: "HTML tag",
+    pattern: "<\\/?([A-Za-z][A-Za-z0-9-]*)(?:\\s[^<>]*)?\\/?>",
+    flags: "g",
+    desc: {
+      en: "Opening, closing and self-closing tags with the tag name in capture group 1.",
+      zh: "开、闭、自闭合标签都能匹配,标签名在捕获组 1 里。",
+      ja: "開始・終了・自己閉じタグに一致し、タグ名は第 1 キャプチャ グループに入ります。",
+      es: "Etiquetas de apertura, cierre y auto-cierre, con el nombre en el grupo 1.",
+      pt: "Tags de abertura, fechamento e auto-fechamento, com o nome no grupo 1.",
+    },
+    sample: "<p class=\"x\">Hi</p><br/>",
+  },
+  {
+    id: "html-entity",
+    name: "HTML entity",
+    pattern: "&(?:[A-Za-z][A-Za-z0-9]*|#[0-9]{1,5}|#x[0-9A-Fa-f]{1,4});",
+    flags: "g",
+    desc: {
+      en: "Named (&amp;), decimal (&#39;) and hexadecimal (&#x2F;) character references.",
+      zh: "命名实体(&amp;)、十进制(&#39;)与十六进制(&#x2F;)字符引用。",
+      ja: "名前参照(&amp;)・10 進(&#39;)・16 進(&#x2F;)の文字参照に一致します。",
+      es: "Referencias con nombre (&amp;), decimales (&#39;) y hexadecimales (&#x2F;).",
+      pt: "Referências nomeadas (&amp;), decimais (&#39;) e hexadecimais (&#x2F;).",
+    },
+    sample: "&amp; &lt; &#39; &#x2F; &notanentity",
+  },
+  {
+    id: "uuid",
+    name: "UUID v1–8",
+    pattern: "\\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[1-8][0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}\\b",
+    flags: "gi",
+    desc: {
+      en: "Canonical 8-4-4-4-12 hex layout, constraining version and variant nibbles loosely.",
+      zh: "标准的 8-4-4-4-12 十六进制布局,对版本位和变体位做宽松约束。",
+      ja: "標準的な 8-4-4-4-12 の 16 進レイアウト。バージョンとバリアントのニブルを緩く制約します。",
+      es: "Disposición hex canónica 8-4-4-4-12, con restricción laxa de versión y variante.",
+      pt: "Layout hex canônico 8-4-4-4-12, com restrição frouxa de versão e variante.",
+    },
+    sample: "req 550e8400-e29b-41d4-a716-446655440000 done",
+  },
+  {
+    id: "semver",
+    name: "Semantic version",
+    pattern: "\\b\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?\\b",
+    flags: "g",
+    desc: {
+      en: "major.minor.patch with optional -prerelease and +build metadata, per semver.org.",
+      zh: "主.次.补丁版本号,可带 -预发布 与 +构建元数据,遵循 semver.org。",
+      ja: "major.minor.patch。semver.org のとおり -prerelease と +build を省略可能です。",
+      es: "mayor.menor.parche con -prerelease y +metadatos de build opcionales, según semver.org.",
+      pt: "maior.menor.parche com -prerelease e +metadados de build opcionais, conforme semver.org.",
+    },
+    sample: "Upgrade from 2.13.0-beta.1 to 3.0.0+build.42.",
+  },
+  {
+    id: "credit-card",
+    name: "Credit card (issuer prefixes)",
+    pattern: "\\b(?:4\\d{12}(?:\\d{3})?|5[1-5]\\d{14}|3[47]\\d{13}|6(?:011|5\\d{2})\\d{12})\\b",
+    flags: "g",
+    desc: {
+      en: "Visa / Mastercard / Amex / Discover number shapes only — format check, never a validity proof.",
+      zh: "只看 Visa / Mastercard / Amex / Discover 的号码形态——仅格式检查,不代表卡真实有效。",
+      ja: "Visa / Mastercard / Amex / Discover の番号形式のみ。形式確認であり、有効性の証明ではありません。",
+      es: "Solo las formas de número de Visa / Mastercard / Amex / Discover: formato, nunca validez.",
+      pt: "Apenas as formas de número de Visa / Mastercard / Amex / Discover — formato, nunca validade.",
+    },
+    sample: "Visa 4111111111111111, Amex 378282246310005, MC 5500000000000004.",
+  },
+  {
+    id: "twitter-handle",
+    name: "Social handle (@)",
+    pattern: "\\B@[A-Za-z0-9_]{4,15}\\b",
+    flags: "g",
+    desc: {
+      en: "Mentions like @handle in text — 4 to 15 word characters, not at word start.",
+      zh: "文本里的 @handle 提及——4 到 15 个词字符,且不能在词首。",
+      ja: "本文中の @handle 形式のメンション。4〜15 文字の単語文字で、語頭は除外します。",
+      es: "Menciones tipo @handle en texto: de 4 a 15 caracteres de palabra, no a inicio de palabra.",
+      pt: "Menções tipo @handle em texto: 4 a 15 caracteres de palavra, sem início de palavra.",
+    },
+    sample: "Ping @regexfan and @dev_01 about the launch.",
+  },
+  {
+    id: "hashtag",
+    name: "Hashtag (Unicode)",
+    pattern: "\\B#[\\p{L}\\p{N}_]+",
+    flags: "gu",
+    desc: {
+      en: "Hashtags in any language thanks to \\p{L}/\\p{N} and the u flag — #regex, #марафон.",
+      zh: "靠 \\p{L}/\\p{N} 和 u 标志支持任意语言的标签——#regex、#马拉松。",
+      ja: "\\p{L}/\\p{N} と u フラッグにより任意の言語のハッシュタグに一致(#regex、#東京 など)。",
+      es: "Hashtags en cualquier idioma gracias a \\p{L}/\\p{N} y la bandera u: #regex, #maratón.",
+      pt: "Hashtags em qualquer idioma graças a \\p{L}/\\p{N} e à flag u: #regex, #maratona.",
+    },
+    sample: "Loving #regex and #марафон and #東京2026 today.",
+  },
+  {
+    id: "emoji",
+    name: "Emoji",
+    pattern: "\\p{Extended_Pictographic}",
+    flags: "gu",
+    desc: {
+      en: "Any Extended_Pictographic code point with the u flag — covering most emoji in use.",
+      zh: "配合 u 标志匹配所有 Extended_Pictographic 码点——覆盖绝大多数在用 emoji。",
+      ja: "u フラッグ付きで Extended_Pictographic のコードポイントに一致。ほとんどの絵文字をカバーします。",
+      es: "Cualquier punto de código Extended_Pictographic con la bandera u: cubre casi todo emoji.",
+      pt: "Qualquer ponto de código Extended_Pictographic com a flag u — cobre quase todo emoji.",
+    },
+    sample: "Great job! 🎉🔥 well done 👍",
+  },
+  {
+    id: "price",
+    name: "Price with symbol",
+    pattern: "[$€£¥]\\s?\\d{1,3}(?:,\\d{3})*(?:\\.\\d{2})?",
+    flags: "g",
+    desc: {
+      en: "Currency symbol followed by grouped digits: $1,299.99, €9.50, £800, ¥1200.",
+      zh: "货币符号后跟分组数字:$1,299.99、€9.50、£800、¥1200。",
+      ja: "通貨記号の後に桁区切り数字。$1,299.99、€9.50、£800、¥1200 など。",
+      es: "Símbolo de moneda seguido de dígitos agrupados: $1,299.99, €9.50, £800, ¥1200.",
+      pt: "Símbolo de moeda seguido de dígitos agrupados: $1,299.99, €9.50, £800, ¥1200.",
+    },
+    sample: "It costs $1,299.99, €9.50 or £800, but not 12 USD.",
+  },
+  {
+    id: "number-grouped",
+    name: "Grouped number (1,000,000)",
+    pattern: "\\b\\d{1,3}(?:,\\d{3})+\\b",
+    flags: "g",
+    desc: {
+      en: "Comma-grouped integers only, so 1,000,000 matches while 10,00 does not.",
+      zh: "只匹配标准千分位整数;1,000,000 能中,10,00 不中。",
+      ja: "3 桁区切りの整数のみ。1,000,000 には一致し、10,00 にはしません。",
+      es: "Solo enteros agrupados con comas: 1,000,000 corresponde, 10,00 no.",
+      pt: "Apenas inteiros agrupados de três em três: 1,000,000 corresponde; 10,00 não.",
+    },
+    sample: "1,000,000 visitors saw 2,500 posts today.",
+  },
+  {
+    id: "time-csv",
+    name: "CSV line (simple)",
+    pattern: "^(?:\"[^\"]*\"|[^\",]*)(?:,(?:\"[^\"]*\"|[^\",]*))*$",
+    flags: "m",
+    desc: {
+      en: "One CSV row per line with quoted fields — the m flag anchors ^ and $ per line.",
+      zh: "每行一条 CSV 记录,字段可带引号——m 标志让 ^ 和 $ 逐行生效。",
+      ja: "1 行 1 レコードの CSV。引用フィールド対応。m フラッグで ^ と $ が行単位で効きます。",
+      es: "Una fila CSV por línea con campos entre comillas; la bandera m ancla ^ y $ por línea.",
+      pt: "Uma linha CSV por linha com campos entre aspas; a flag m ancora ^ e $ por linha.",
+    },
+    sample: "name,age\n\"Doe, John\",42\nJane,39",
+  },
+  {
+    id: "quoted-string",
+    name: "Quoted string",
+    pattern: "\"[^\"\\n]*\"",
+    flags: "g",
+    desc: {
+      en: "Double-quoted spans without line breaks; escaped quotes need a longer pattern.",
+      zh: "不含换行的双引号字符串;要处理 \" 转义需要更长的模式。",
+      ja: "改行を含まない二重引用符の範囲。エスケープされた引用符はより長いパターンが必要です。",
+      es: "Tramos entre comillas dobles sin saltos de línea; las comillas escapadas piden un patrón mayor.",
+      pt: "Trechos entre aspas duplas sem quebras de linha; aspas escapadas pedem um padrão maior.",
+    },
+    sample: "He said \"hello world\" and she said \"goodbye\".",
+  },
+  {
+    id: "base64",
+    name: "Base64 (whole string)",
+    pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+    flags: "",
+    desc: {
+      en: "Validates that an entire string is Base64-shaped, including = padding at the end.",
+      zh: "校验整串是否符合 Base64 形态,包括结尾的 = 补位。",
+      ja: "文字列全体が Base64 の形(末尾の = パディング込み)かを検証します。",
+      es: "Valida que una cadena completa tenga forma Base64, incluido el relleno = final.",
+      pt: "Valida se a string inteira tem forma Base64, incluindo o padding = no final.",
+    },
+    sample: "VGhlIHF1aWNrIGJyb3duIGZveA==",
+  },
+  {
+    id: "mac-address",
+    name: "MAC address",
+    pattern: "\\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\\b",
+    flags: "g",
+    desc: {
+      en: "Colon-separated hex pairs, the canonical 00:1B:44:11:3A:B7 layout.",
+      zh: "冒号分隔的十六进制对,即标准的 00:1B:44:11:3A:B7 形态。",
+      ja: "コロン区切りの 16 進 2 桁ペア。標準的な 00:1B:44:11:3A:B7 形式です。",
+      es: "Pares hexadecimales separados por dos puntos, el formato canónico 00:1B:44:11:3A:B7.",
+      pt: "Pares hexadecimais separados por dois pontos, o formato canônico 00:1B:44:11:3A:B7.",
+    },
+    sample: "NIC 00:1B:44:11:3A:B7 on port 3.",
+  },
+  {
+    id: "youtube-id",
+    name: "YouTube video ID",
+    pattern: "(?:youtube\\.com/watch\\?v=|youtu\\.be/)[A-Za-z0-9_-]{11}",
+    flags: "g",
+    desc: {
+      en: "Grabs the 11-character video id from watch and youtu.be links.",
+      zh: "从 watch 与 youtu.be 链接中抓取 11 位视频 ID。",
+      ja: "watch と youtu.be のリンクから 11 文字の動画 ID を取り出します。",
+      es: "Captura el ID de vídeo de 11 caracteres en enlaces watch y youtu.be.",
+      pt: "Captura o ID de vídeo de 11 caracteres em links watch e youtu.be.",
+    },
+    sample: "https://youtu.be/dQw4w9WgXcQ vs youtube.com/watch?v=oHg5SJYRHA0",
+  },
+  {
+    id: "whitespace-runs",
+    name: "Whitespace runs",
+    pattern: "\\s+",
+    flags: "g",
+    desc: {
+      en: "The cleanup workhorse — replace every run of whitespace with a single space.",
+      zh: "清理文本的主力——把每段连续空白替换成单个空格。",
+      ja: "テキスト清掃の定番。連続する空白を 1 つのスペースに置き換えます。",
+      es: "El caballo de batalla de la limpieza: sustituye cada tramo de espacios por uno solo.",
+      pt: "O cavalo de batalha da limpeza — troca cada trecho de espaço por um só.",
+    },
+    sample: "too   many    spaces here",
+  },
+  {
+    id: "trailing-spaces",
+    name: "Trailing spaces",
+    pattern: "[ \\t]+$",
+    flags: "gm",
+    desc: {
+      en: "Spaces or tabs before each end of line, using the m flag — perfect for a cleanup replace.",
+      zh: "每行行尾的空格或制表符(用 m 标志)——最适合做清理替换。",
+      ja: "各行末尾の空白・タブ(m フラッグ)。クリーンアップ置換に最適です。",
+      es: "Espacios o tabulaciones antes de cada fin de línea, con la bandera m — ideal para limpiar.",
+      pt: "Espaços ou tabulações antes do fim de cada linha, com a flag m — ótimo para limpeza.",
+    },
+    sample: "first line \nsecond line\t\nthird",
+  },
+  {
+    id: "duplicate-word",
+    name: "Duplicated word",
+    pattern: "\\b([A-Za-z]+)\\s+\\1\\b",
+    flags: "gi",
+    desc: {
+      en: "Backreference \\1 finds a word immediately repeated — 'This this is a very very typo'.",
+      zh: "反向引用 \\1 找出紧邻的重复单词——如 This this、very very。",
+      ja: "後方参照 \\1 で直後に繰り返された単語を検出(This this、very very など)。",
+      es: "La referencia \\1 encuentra una palabra repetida inmediatamente: 'this this', 'very very'.",
+      pt: "A referência \\1 acha uma palavra repetida em seguida — 'this this', 'very very'.",
+    },
+    sample: "This this is a very very common typo.",
+  },
+];
