@@ -2,9 +2,9 @@
 // 刻意不加 as const:字符串需放宽为 string,翻译文件才可实现同一类型。
 const en = {
   brand: "RegExpresso",
-  tagline: "Regular expressions, tested and explained in your browser.",
+  tagline: "Regex tester, explained",
   metaDesc:
-    "Test, explain and replace regular expressions in 15 languages: a live regex tester with match highlighting, a plain-language explainer and 30 copy-paste patterns. Everything runs in your browser.",
+    "Test, explain and replace regexes in 15 languages: live tester with match highlighting, plain-language explainer and 30 copy-paste patterns. All in your browser.",
 
   nav: {
     tools: "All tools",
