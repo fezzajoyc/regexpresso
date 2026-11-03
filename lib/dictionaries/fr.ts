@@ -21,6 +21,10 @@ const fr: Dictionary = {
     heroSub:
       "Testez des motifs en direct, lisez-les en mots simples et empruntez 30 recettes éprouvées. Des outils regex en 15 langues — tout en local dans votre navigateur, sans compte ni envoi.",
     browseAll: "Voir tous les outils",
+    pinned: "Épinglés",
+    pin: "Épingler",
+    unpin: "Désépingler",
+    popular: "Populaires en ce moment",
     categoriesTitle: "Catégories",
     featuredTitle: "Outils populaires",
     trustLocal: "Le texte reste sur votre appareil",
@@ -78,6 +82,8 @@ const fr: Dictionary = {
     howTo: "Mode d'emploi",
     faq: "Questions fréquentes",
     related: "Outils associés",
+    nextStep: "Étapes suivantes",
+    copyLink: "Copier le lien",
     privacyNote:
       "Cet outil s'exécute entièrement dans votre navigateur. Vos données ne quittent jamais votre appareil — elles ne sont envoyées à aucun serveur.",
     inCategory: "Plus d'outils dans {category}",

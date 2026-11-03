@@ -18,6 +18,10 @@ const tr = {
     heroSub:
       "Desenleri canlı test edin, sade kelimelerle okuyun ve 30 kanıtlanmış tarifi ödünç alın. 15 dilde regex araçları — her şey tarayıcınızda yerel, kayıt yok, yükleme yok.",
     browseAll: "Tüm araçlara göz at",
+    pinned: "Sabitlenen",
+    pin: "Üste sabitle",
+    unpin: "Sabitlemeyi kaldır",
+    popular: "Şu anda popüler",
     categoriesTitle: "Kategoriler",
     featuredTitle: "Popüler araçlar",
     trustLocal: "Metin cihazınızda kalır",
@@ -75,6 +79,8 @@ const tr = {
     howTo: "Nasıl kullanılır",
     faq: "Sık sorulan sorular",
     related: "İlgili araçlar",
+    nextStep: "Sonraki adımlar",
+    copyLink: "Bağlantıyı kopyala",
     privacyNote:
       "Bu araç tamamen tarayıcında çalışır. Verilerin asla cihazından çıkmaz — hiçbir sunucuya yüklenmez.",
     inCategory: "{category} kategorisinde daha fazlası",

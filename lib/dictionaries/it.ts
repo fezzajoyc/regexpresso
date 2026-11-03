@@ -19,6 +19,10 @@ const it = {
     heroSub:
       "Prova i pattern dal vivo, leggili in parole semplici e prendi in prestito 30 ricette collaudate. Strumenti regex in 15 lingue — tutto in locale nel browser, senza registrazione né upload.",
     browseAll: "Sfoglia tutti gli strumenti",
+    pinned: "Fissati",
+    pin: "Fissa in alto",
+    unpin: "Rimuovi dai fissati",
+    popular: "Popolari adesso",
     categoriesTitle: "Categorie",
     featuredTitle: "Strumenti popolari",
     trustLocal: "Il testo resta sul tuo dispositivo",
@@ -76,6 +80,8 @@ const it = {
     howTo: "Come si usa",
     faq: "Domande frequenti",
     related: "Strumenti correlati",
+    nextStep: "Passaggi successivi",
+    copyLink: "Copia link",
     privacyNote:
       "Questo strumento gira interamente nel tuo browser. I tuoi dati non lasciano mai il dispositivo: non vengono caricati su nessun server.",
     inCategory: "Altri in {category}",

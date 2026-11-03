@@ -19,6 +19,10 @@ const pt: Dictionary = {
     heroSub:
       "Teste padrões ao vivo, leia-os em palavras simples e tome emprestadas 30 receitas comprovadas. Ferramentas de regex em 15 idiomas — tudo local no navegador, sem cadastro, sem envios.",
     browseAll: "Ver todas as ferramentas",
+    pinned: "Fixados",
+    pin: "Fixar no topo",
+    unpin: "Remover dos fixados",
+    popular: "Populares agora",
     categoriesTitle: "Categorias",
     featuredTitle: "Ferramentas populares",
     trustLocal: "O texto fica no seu dispositivo",
@@ -74,6 +78,8 @@ const pt: Dictionary = {
     howTo: "Como usar",
     faq: "Perguntas frequentes",
     related: "Ferramentas relacionadas",
+    nextStep: "Próximos passos",
+    copyLink: "Copiar link",
     privacyNote:
       "Esta ferramenta roda inteiramente no seu navegador. Seus dados nunca saem do seu dispositivo e não são enviados a nenhum servidor.",
     inCategory: "Mais em {category}",
