@@ -61,6 +61,7 @@ export default async function CategoryPage({
         }}
       />
       <Breadcrumb
+        locale={locale}
         items={[
           { label: SITE.name, href: `/${locale}` },
           { label: t.categories[cat].name },
